@@ -5,6 +5,9 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"			// 헤더파일 추가
 #include "Bullet.h"							// 총알 클래스 추가.
+#include "Kismet/GameplayStatics.h"
+#include "Components/SceneComponent.h"
+
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -59,12 +62,36 @@ APlayerCharacter::APlayerCharacter()
 		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
 	}
 
+	// 5. 스나이퍼건(레이저총) 컴포넌트 등록
+	sniperGunComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
+	
+	// 5-1. 부모 컴포넌트를 Mesh 컴포넌트로 설정
+	sniperGunComp->SetupAttachment(GetMesh());
+
+	// 5-2. 스태틱메시 데이터 로드 (임시로 Pipe(파이프)로 함)
+	ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_Pipe.Shape_Pipe'"));
+
+	// 5-3. 데이터 로드가 성공했다면
+	if (TempSniperMesh.Succeeded()) {
+		// 5-4. 스태틱 메시 데이터 할당
+		sniperGunComp->SetStaticMesh(TempSniperMesh.Object);
+
+		// 5-5. 위치 조정하기
+		sniperGunComp->SetRelativeLocation(FVector(-22, 55, 120));
+
+		// 5-6. 크기 조정하기
+		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
+	}
+
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// 기본으로 스나이퍼건을 사용하도록 설정.
+	ChangeToSniperGun();
 	
 }
 
@@ -72,6 +99,7 @@ void APlayerCharacter::BeginPlay()
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 
 	Move();
 
@@ -95,6 +123,10 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// 총알 발사 이벤트 처리 함수 바인딩
 	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &APlayerCharacter::InputFire);
+
+	// 총 교체 이벤트 처리 함수 바인딩
+	PlayerInputComponent->BindAction(TEXT("GrenadeGun"), IE_Pressed, this, &APlayerCharacter::ChangeToGrenadeGun);
+	PlayerInputComponent->BindAction(TEXT("SniperGun"), IE_Pressed, this, &APlayerCharacter::ChangeToSniperGun);
 
 }
 
@@ -144,8 +176,63 @@ void APlayerCharacter::Move()
 
 void APlayerCharacter::InputFire()
 {
-	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
-	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+	// 유탄총 사용시
+	if (bUsingGrenadeGun) {
+		FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
+		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+
+	}
+	else // 스나이퍼건 사용시
+	{
+
+		// LineTrace의 시작 위치
+		FVector startPos = tpsCamComp->GetComponentLocation();
+
+
+		// LineTrace의 종료 위치
+		FVector endPos = tpsCamComp->GetComponentLocation() + tpsCamComp->GetForwardVector() * 5000;
+
+		// LineTrace의 충돌 정보를 담을 변수
+		FHitResult hitInfo;
+
+		// 충돌 옵션 설정 변수
+		FCollisionQueryParams params;
+
+		// 자기 자신(플레이어)는 충돌에서 제외
+		params.AddIgnoredActor(this);
+
+		// Channel 필터를 이용한 LineTrace 충돌 검충(충돌 정보, 시작 위치, 종료 위치, 검출 채널, 충돌 옵션)
+		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
+
+		// LineTrace가 부딪혔을 때
+		if (bHit) {
+			// 충돌 처리-> 총알 파편 효과 재생
+			FTransform bulletTrans;
+
+			// 부딪힌 위치 할당
+			bulletTrans.SetLocation(hitInfo.ImpactPoint);
+
+			// 총알 파편 효과 인스턴스 생성
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
+		}
+
+	}
+
+}
+
+void APlayerCharacter::ChangeToGrenadeGun()
+{
+	// 유탄총 사용 중으로 체크
+	bUsingGrenadeGun = true;
+	sniperGunComp->SetVisibility(false);
+	gunMeshComp->SetVisibility(true);
+}
+
+void APlayerCharacter::ChangeToSniperGun()
+{
+	bUsingGrenadeGun = false;
+	sniperGunComp->SetVisibility(true);
+	gunMeshComp->SetVisibility(false);
 }
 
 
