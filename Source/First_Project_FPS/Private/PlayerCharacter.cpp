@@ -3,7 +3,8 @@
 
 #include "PlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
+#include "Camera/CameraComponent.h"			// 헤더파일 추가
+#include "Bullet.h"							// 총알 클래스 추가.
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -30,7 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	// 마우스를 이용한 회전처리
 	springArmComp->bUsePawnControlRotation = true;
 
-	// 3-2 CameraComponent 부착
+	// 3-2. CameraComponent 부착
 	tpsCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TpsCamComp"));
 	tpsCamComp->SetupAttachment(springArmComp);
 
@@ -40,6 +41,23 @@ APlayerCharacter::APlayerCharacter()
 	// 마우스를 이용한 회전처리
 	bUseControllerRotationYaw = true;
 
+
+	// 4. 총 스켈레탈메시 컴포넌트 등록
+	gunMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("GunMeshComp"));
+
+	// 4-1. 부모 컴포넌트를 Mesh컴포넌트로 설정
+	gunMeshComp->SetupAttachment(GetMesh());
+
+	// 4-2. 스켈레탈 메시 데이터 로드
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempGunMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/MyResources/FPWeapon/Mesh/SK_FPGun.SK_FPGun'"));
+
+	// 4-3 데이터로드가 성공했다면
+	if (TempGunMesh.Succeeded()) {
+		// 4-4. 스켈레탈메시 데이터 할당
+		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
+		// 4-5. 위치 조정하기
+		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+	}
 
 }
 
@@ -74,6 +92,9 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 	// 점프 입력 이벤트 처리 함수 바인딩
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &APlayerCharacter::InputJump);
+
+	// 총알 발사 이벤트 처리 함수 바인딩
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &APlayerCharacter::InputFire);
 
 }
 
@@ -119,6 +140,12 @@ void APlayerCharacter::Move()
 	AddMovementInput(direction); // 위의 과정을 제공되는 함수로 처리할 수 있다..
 
 	direction = FVector::ZeroVector;
+}
+
+void APlayerCharacter::InputFire()
+{
+	FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
+	GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
 }
 
 
