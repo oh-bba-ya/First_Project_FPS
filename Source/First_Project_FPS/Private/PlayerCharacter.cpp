@@ -3,6 +3,7 @@
 
 #include "PlayerCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Camera/CameraComponent.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -26,6 +27,19 @@ APlayerCharacter::APlayerCharacter()
 	springArmComp->SetRelativeLocation(FVector(0, 70, 90));
 	springArmComp->TargetArmLength = 400;
 
+	// 마우스를 이용한 회전처리
+	springArmComp->bUsePawnControlRotation = true;
+
+	// 3-2 CameraComponent 부착
+	tpsCamComp = CreateDefaultSubobject<UCameraComponent>(TEXT("TpsCamComp"));
+	tpsCamComp->SetupAttachment(springArmComp);
+
+	// 마우스를 이용한 회전처리
+	tpsCamComp->bUsePawnControlRotation = false;
+
+	// 마우스를 이용한 회전처리
+	bUseControllerRotationYaw = true;
+
 
 }
 
@@ -41,6 +55,8 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Move();
+
 }
 
 // Called to bind functionality to input
@@ -48,5 +64,61 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Turn , LookUp 바인딩
+	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &APlayerCharacter::Turn);
+	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APlayerCharacter::LookUp);
+
+	// 좌우 입력 이벤트 처리 함수 바인딩
+	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &APlayerCharacter::InputHorizontal);
+	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &APlayerCharacter::InputVertical);
+
+	// 점프 입력 이벤트 처리 함수 바인딩
+	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &APlayerCharacter::InputJump);
+
 }
+
+
+// 좌우 회전 입력 정의
+void APlayerCharacter::Turn(float value) {
+	AddControllerYawInput(value);
+}
+
+// 상하 회전 입력 정의
+void APlayerCharacter::LookUp(float value) {
+	AddControllerPitchInput(value);
+}
+
+void APlayerCharacter::InputHorizontal(float value)
+{
+	direction.Y = value;
+}
+
+void APlayerCharacter::InputVertical(float value)
+{
+	direction.X = value;
+}
+
+void APlayerCharacter::InputJump()
+{
+	Jump();
+}
+
+void APlayerCharacter::Move()
+{
+	// 마우스 즉, 캐릭터가 바라보는 방향으로 방향 설정
+	direction = FTransform(GetControlRotation()).TransformVector(direction);
+
+	// 플레이어 이동처리 (등속운동) , P(결과위치) = P0(현재위치) + V(속도) *t(시간)
+	/*
+	FVector P0 = GetActorLocation();
+	FVector vt = direction * walkSpeed * DeltaTime;
+	FVector P = P0 + vt;
+	SetActorLocation(P);
+	*/
+
+	AddMovementInput(direction); // 위의 과정을 제공되는 함수로 처리할 수 있다..
+
+	direction = FVector::ZeroVector;
+}
+
 
