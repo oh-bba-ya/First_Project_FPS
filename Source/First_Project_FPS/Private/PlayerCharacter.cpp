@@ -6,7 +6,6 @@
 #include "Camera/CameraComponent.h"			// 헤더파일 추가
 #include "Bullet.h"							// 총알 클래스 추가.
 #include "Kismet/GameplayStatics.h"
-#include "Components/SceneComponent.h"
 
 
 // Sets default values
@@ -214,6 +213,18 @@ void APlayerCharacter::InputFire()
 
 			// 총알 파편 효과 인스턴스 생성
 			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), bulletEffectFactory, bulletTrans);
+
+			// 맞을 물체 컴포넌트 
+			auto hitComp = hitInfo.GetComponent();
+
+			// 1. 만약 컴포넌트에 물리가 적용되어 있다면
+			if (hitComp && hitComp->IsSimulatingPhysics()) {
+				// 2. 날려버릴 힘과 방향이 필요 , F = ma 뉴턴 운동법칙
+				FVector force = -hitInfo.ImpactNormal * hitComp->GetMass() * 500000;
+
+				// 3. 그 방향으로 날린다. 
+				hitComp->AddForce(force);
+			}
 		}
 
 	}
