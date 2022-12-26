@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"		// 헤더파일 추가
 #include "EnemySimple.h"
+#include "FPSGameModeBase.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -111,6 +112,18 @@ void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	if (enemy != nullptr) {
 		UE_LOG(LogTemp, Warning, TEXT("Enemy"));
 		OtherActor->Destroy();
+
+		// 현재 게임 모드를 가져온다.
+		AGameModeBase* currentMode = GetWorld()->GetAuthGameMode();
+
+		// AFPSGameModeBase로 변환한다.
+		AFPSGameModeBase* currentGameModeBase = Cast<AFPSGameModeBase>(currentMode);
+
+		if (currentGameModeBase != nullptr) {
+			currentGameModeBase->AddScore(1);
+			UE_LOG(LogTemp, Warning, TEXT("FPSGameMode"));
+		}
+
 	}
 	Destroy();
 }
