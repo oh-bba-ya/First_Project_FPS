@@ -6,6 +6,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"		// 헤더파일 추가
 #include "EnemySimple.h"
 #include "FPSGameModeBase.h"
+#include "EnemySimpleFactory.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -106,25 +107,39 @@ void ABullet::Die()
 
 void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	// 현재 게임 모드를 가져온다.
+	AGameModeBase* currentMode = GetWorld()->GetAuthGameMode();
+
+	// AFPSGameModeBase로 변환한다.
+	AFPSGameModeBase* currentGameModeBase = Cast<AFPSGameModeBase>(currentMode);
+
+	// EnemySimple 캐스팅
 	AEnemySimple* enemy = Cast<AEnemySimple>(OtherActor);
-	UE_LOG(LogTemp, Warning, TEXT("collsion"));
 
 	if (enemy != nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("Enemy"));
 		OtherActor->Destroy();
-
-		// 현재 게임 모드를 가져온다.
-		AGameModeBase* currentMode = GetWorld()->GetAuthGameMode();
-
-		// AFPSGameModeBase로 변환한다.
-		AFPSGameModeBase* currentGameModeBase = Cast<AFPSGameModeBase>(currentMode);
 
 		if (currentGameModeBase != nullptr) {
 			currentGameModeBase->AddScore(1);
-			UE_LOG(LogTemp, Warning, TEXT("FPSGameMode"));
 		}
 
 	}
+
+	// EnemyFactory 캐스팅
+	AEnemySimpleFactory* enemyFactory = Cast<AEnemySimpleFactory>(OtherActor);
+
+	if (enemyFactory != nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("Factory"));
+		OtherActor->Destroy();
+
+		if (currentGameModeBase != nullptr) {
+			currentGameModeBase->AddScore(1);
+		}
+
+
+	}
+	
+
 	Destroy();
 }
 

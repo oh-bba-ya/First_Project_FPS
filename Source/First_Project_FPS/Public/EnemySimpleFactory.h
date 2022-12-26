@@ -29,6 +29,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AEnemySimple> enemy;
 
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* boxComp;
+
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* meshComp;
+
 private:
 	float currentTime = 0;
 
