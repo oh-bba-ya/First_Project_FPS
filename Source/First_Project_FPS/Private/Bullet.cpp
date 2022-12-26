@@ -4,6 +4,7 @@
 #include "Bullet.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"		// 헤더파일 추가
+#include "EnemySimple.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -57,6 +58,10 @@ ABullet::ABullet()
 	//InitialLifeSpan = 2.0f;
 
 
+	// Collision presets을 PlayerBullet으로 설정
+	collisionComp->SetCollisionProfileName(TEXT("PlayerBullet"));
+
+
 
 
 }
@@ -65,6 +70,9 @@ ABullet::ABullet()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// CollisionComponent의 충돌 오버랩 이벤트에 BulletOverlap 함수를 연결한다.
+	collisionComp->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnBulletOverlap);
 
 	// Destoty()를 위한 타이머 설정 , 
 	FTimerHandle deathTimer;
@@ -79,6 +87,8 @@ void ABullet::BeginPlay()
 		, 2.0f, false);
 
 	
+
+	
 }
 
 // Called every frame
@@ -90,6 +100,18 @@ void ABullet::Tick(float DeltaTime)
 
 void ABullet::Die()
 {
+	Destroy();
+}
+
+void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	AEnemySimple* enemy = Cast<AEnemySimple>(OtherActor);
+	UE_LOG(LogTemp, Warning, TEXT("collsion"));
+
+	if (enemy != nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("Enemy"));
+		OtherActor->Destroy();
+	}
 	Destroy();
 }
 

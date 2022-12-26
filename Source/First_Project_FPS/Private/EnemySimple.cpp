@@ -31,6 +31,10 @@ AEnemySimple::AEnemySimple()
 	// 2-2. 스태틱 메쉬 위치 조정
 	meshComp->SetRelativeLocation(FVector(0, 0, -50));
 
+
+	// Collision Presets을 Enemy 프리셋으로 변경
+	boxComp->SetCollisionProfileName(TEXT("EnemySimple"));
+
 }
 
 // Called when the game starts or when spawned
@@ -68,7 +72,7 @@ void AEnemySimple::Tick(float DeltaTime)
 
 	// BeginPlay()에서 결정된 방향으로 이동한다.
 	FVector newLocation = GetActorLocation() + dir * moveSpeed * DeltaTime;
-	SetActorLocation(newLocation);
+	SetActorLocation(FVector(newLocation.X, newLocation.Y, GetActorLocation().Z));
 
 }
 

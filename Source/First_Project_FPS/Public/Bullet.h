@@ -38,4 +38,7 @@ public:
 	// 총알 제거 함수 (Destory 이용)
 	void Die();
 
+	UFUNCTION()
+	void OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
 };

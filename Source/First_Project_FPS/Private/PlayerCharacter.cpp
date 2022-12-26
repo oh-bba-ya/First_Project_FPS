@@ -82,6 +82,11 @@ APlayerCharacter::APlayerCharacter()
 		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
 	}
 
+	// 오버랩 이벤트를 켠다.
+
+
+	// 
+
 }
 
 // Called when the game starts or when spawned
