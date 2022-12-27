@@ -90,4 +90,37 @@ public:
 	// 총알 파편 효과 공장
 	UPROPERTY(EditAnywhere, Category = BulletEffect)
 		class UParticleSystem* bulletEffectFactory;
+
+	// 피격 당했을 때 처리
+	void OnHitEvent();
+
+	UFUNCTION()
+	float GetMaxHealth();
+
+	UFUNCTION()
+	float GetCurrentHealth();
+
+	UFUNCTION()
+	void SetHealth(float health);
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UMainWidget>mainWidget;
+
+
+	UPROPERTY(meta = (BindWidget))
+		class UProgressBar* PB_hpBar;
+
+private:
+	// 현재 체력
+	float hp;
+
+	// 초기 HP 값
+	UPROPERTY(EditAnywhere, Category = Health)
+	float initialHp = 100;
+
+	// 현재 뷰 포트에 로드된 위젯 저장용 변수
+	class UMainWidget* mainUI;
+
+	
+		
 };

@@ -6,6 +6,9 @@
 #include "Camera/CameraComponent.h"			// 헤더파일 추가
 #include "Bullet.h"							// 총알 클래스 추가.
 #include "Kismet/GameplayStatics.h"
+#include "MainWidget.h"
+#include "Components/ProgressBar.h"
+
 
 
 // Sets default values
@@ -82,10 +85,10 @@ APlayerCharacter::APlayerCharacter()
 		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
 	}
 
-	// 오버랩 이벤트를 켠다.
 
+	// 초기 체력 설정
+	hp = initialHp;
 
-	// 
 
 }
 
@@ -96,6 +99,18 @@ void APlayerCharacter::BeginPlay()
 
 	// 기본으로 스나이퍼건을 사용하도록 설정.
 	ChangeToSniperGun();
+
+
+	// main 위젯 설정
+	if (mainWidget != nullptr) {
+		// mainWidget 블루프린트 파일을 메모리에 로드한다.
+		mainUI = CreateWidget<UMainWidget>(GetWorld(), mainWidget);
+		if (mainUI != nullptr) {
+			mainUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth() * 100);
+			UE_LOG(LogTemp, Warning, TEXT("Begin percentage : %.1f"), mainUI->hpBar->GetPercent());
+		}
+
+	}
 	
 }
 
@@ -104,6 +119,10 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// 위젯이 메모리에 로드되면 뷰 포트에 출력한다.
+	if (mainUI != nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("percentage : %.1f"), mainUI->hpBar->GetPercent());
+	}
 
 	Move();
 
@@ -251,4 +270,31 @@ void APlayerCharacter::ChangeToSniperGun()
 	gunMeshComp->SetVisibility(false);
 }
 
+
+void APlayerCharacter::OnHitEvent()
+{
+	
+	hp-= 10;
+	mainUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth());
+	UE_LOG(LogTemp, Warning, TEXT("Damaged!! %.1f"),hp);
+	if (hp <= 0) {
+		hp = 0;
+		UE_LOG(LogTemp, Warning, TEXT("You Die!!"));
+	}
+}
+
+float APlayerCharacter::GetMaxHealth()
+{
+	return initialHp;
+}
+
+float APlayerCharacter::GetCurrentHealth()
+{
+	return hp;
+}
+
+void APlayerCharacter::SetHealth(float health)
+{
+	hp = health;
+}
 

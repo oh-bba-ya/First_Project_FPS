@@ -86,7 +86,7 @@ void ABullet::BeginPlay()
 		FTimerDelegate::CreateLambda([this]()->void {
 			Destroy();
 		})
-		, 2.0f, false);
+		, 8.0f, false);
 
 	
 
@@ -113,24 +113,13 @@ void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	// AFPSGameModeBase로 변환한다.
 	AFPSGameModeBase* currentGameModeBase = Cast<AFPSGameModeBase>(currentMode);
 
-	// EnemySimple 캐스팅
-	AEnemySimple* enemy = Cast<AEnemySimple>(OtherActor);
-
-	if (enemy != nullptr) {
-		OtherActor->Destroy();
-
-		if (currentGameModeBase != nullptr) {
-			currentGameModeBase->AddScore(1);
-		}
-
-	}
 
 	// EnemyFactory 캐스팅
 	AEnemySimpleFactory* enemyFactory = Cast<AEnemySimpleFactory>(OtherActor);
 
 	if (enemyFactory != nullptr) {
 		UE_LOG(LogTemp, Warning, TEXT("Factory"));
-		OtherActor->Destroy();
+		enemyFactory->Destroy();
 
 		if (currentGameModeBase != nullptr) {
 			currentGameModeBase->AddScore(1);
@@ -139,7 +128,7 @@ void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 
 	}
 	
-
 	Destroy();
+
 }
 

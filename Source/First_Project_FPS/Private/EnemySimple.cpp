@@ -6,6 +6,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "EngineUtils.h"
 #include "PlayerCharacter.h"
+#include "Math/Vector.h"
 
 // Sets default values
 AEnemySimple::AEnemySimple()
@@ -41,28 +42,21 @@ AEnemySimple::AEnemySimple()
 void AEnemySimple::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// 1~ 100 사이의 임의의 정수 값을 추첨한다.
-	int32 drawResult = FMath::RandRange(1, 100);
-
-	// 만일, 추첨된 값이 추적 확률 변수보다 작거나 같다면..
-	if (drawResult <= traceRate) {
-		
-		// 월드 공간에 APlayerPawn 클래스로 된 액터를 모두 검색한다.
-		for (TActorIterator<APlayerCharacter> player(GetWorld()); player; ++player) {
-			// 만일 검색된 액터의 이름에 "BP_PlayerPawn"이란 문구가 포함되어 있다면
-			if (player->GetName().Contains(TEXT("BP_PlayerCharacter"))) {
-				// 플레이어 액터의 위치 - 자신의 위치
-				dir = player->GetActorLocation() - GetActorLocation();
-				dir.Normalize();
-			}
-		}
-	}
-	else // 그렇지 않다면 정면 방향 벡터를 생성한다.
-	{
-		dir = GetActorForwardVector();
-	}
 	
+	// CollisionComponent의 충돌 오버랩 이벤트에 BulletOverlap 함수를 연결한다.
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AEnemySimple::OnBulletOverlap);
+
+	// Destoty()를 위한 타이머 설정 , 
+	FTimerHandle deathTimer;
+
+	// 다음 코드는 람다 함수를 사용
+	GetWorld()->GetTimerManager().SetTimer(deathTimer,
+		FTimerDelegate::CreateLambda([this]()->void {
+			Destroy();
+			})
+		, 8.0f, false);
+
+	SetDirection();
 }
 
 // Called every frame
@@ -71,8 +65,57 @@ void AEnemySimple::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// BeginPlay()에서 결정된 방향으로 이동한다.
-	FVector newLocation = GetActorLocation() + dir * moveSpeed * DeltaTime;
-	SetActorLocation(FVector(newLocation.X, newLocation.Y, GetActorLocation().Z));
+	Fire(DeltaTime);
 
 }
+
+
+// Called every frame
+void AEnemySimple::Fire(float deltaTime)
+{
+
+	// BeginPlay()에서 결정된 방향으로 이동한다.
+	FVector newLocation = GetActorLocation() + dir * moveSpeed * deltaTime;
+	SetActorLocation(newLocation);
+
+}
+
+// Called every frame
+void AEnemySimple::SetDirection()
+{
+
+	// 월드 공간에 APlayerCharacter 클래스로 된 액터를 모두 검색한다.
+	for (TActorIterator<APlayerCharacter> player(GetWorld()); player; ++player) {
+		// 만일 검색된 액터의 이름에 "BP_PlayerPawn"이란 문구가 포함되어 있다면
+		if (player->GetName().Contains(TEXT("BP_PlayerCharacter"))) {
+			// 플레이어 액터의 위치 - 자신의 위치
+			dir = player->GetActorLocation() - GetActorLocation();
+
+			// 플레이어와의 거리
+			FVector length = player->GetActorLocation() - GetActorLocation();
+			double temp = length.Size();
+
+
+			UE_LOG(LogTemp, Warning, TEXT("%d"), temp);
+			dir.Normalize();
+		}
+	}
+
+}
+
+
+void AEnemySimple::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// 플레이어 캐스팅
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(OtherActor);
+
+	if (playerCharacter != nullptr) {
+		playerCharacter->OnHitEvent();
+
+	}
+
+	Destroy();
+
+}
+
 

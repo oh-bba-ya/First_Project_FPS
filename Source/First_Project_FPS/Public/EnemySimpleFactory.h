@@ -35,8 +35,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* meshComp;
 
+	
+
 private:
 	float currentTime = 0;
+
 
 
 };

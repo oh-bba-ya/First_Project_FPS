@@ -37,6 +37,16 @@ public:
 	UPROPERTY(EditAnywhere)
 		float moveSpeed = 800;
 
+	void SetDirection();
+
+	void Fire(float deltaTime);
+
+
+
+	UFUNCTION()
+	void OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	
 private:
 	// Enemy에서 플레이어 방향
 	FVector dir;

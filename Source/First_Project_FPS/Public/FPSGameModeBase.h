@@ -20,6 +20,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UMainWidget>mainWidget;
 
+	class APlayerCharacter* player;
+
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -30,6 +33,8 @@ private:
 
 	// 현재 뷰 포트에 로드된 위젯 저장용 변수
 	class UMainWidget* mainUI;
+
+
 
 	void PrintScore();
 
