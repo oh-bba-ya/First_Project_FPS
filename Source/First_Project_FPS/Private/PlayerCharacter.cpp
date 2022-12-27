@@ -6,7 +6,7 @@
 #include "Camera/CameraComponent.h"			// 헤더파일 추가
 #include "Bullet.h"							// 총알 클래스 추가.
 #include "Kismet/GameplayStatics.h"
-#include "MainWidget.h"
+#include "HpBar.h"
 #include "Components/ProgressBar.h"
 
 
@@ -102,12 +102,12 @@ void APlayerCharacter::BeginPlay()
 
 
 	// main 위젯 설정
-	if (mainWidget != nullptr) {
+	if (hpBarWidget != nullptr) {
 		// mainWidget 블루프린트 파일을 메모리에 로드한다.
-		mainUI = CreateWidget<UMainWidget>(GetWorld(), mainWidget);
-		if (mainUI != nullptr) {
-			mainUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth() * 100);
-			UE_LOG(LogTemp, Warning, TEXT("Begin percentage : %.1f"), mainUI->hpBar->GetPercent());
+		hpBarUI = CreateWidget<UHpBar>(GetWorld(), hpBarWidget);
+		if (hpBarUI != nullptr) {
+			hpBarUI->AddToViewport();
+			hpBarUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth() * 100);
 		}
 
 	}
@@ -119,10 +119,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// 위젯이 메모리에 로드되면 뷰 포트에 출력한다.
-	if (mainUI != nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("percentage : %.1f"), mainUI->hpBar->GetPercent());
-	}
 
 	Move();
 
@@ -275,7 +271,7 @@ void APlayerCharacter::OnHitEvent()
 {
 	
 	hp-= 10;
-	mainUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth());
+	hpBarUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth());
 	UE_LOG(LogTemp, Warning, TEXT("Damaged!! %.1f"),hp);
 	if (hp <= 0) {
 		hp = 0;

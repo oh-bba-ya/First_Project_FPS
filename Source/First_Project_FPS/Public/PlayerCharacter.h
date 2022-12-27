@@ -104,7 +104,7 @@ public:
 	void SetHealth(float health);
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<class UMainWidget>mainWidget;
+		TSubclassOf<class UHpBar> hpBarWidget;
 
 
 	UPROPERTY(meta = (BindWidget))
@@ -119,7 +119,7 @@ private:
 	float initialHp = 100;
 
 	// 현재 뷰 포트에 로드된 위젯 저장용 변수
-	class UMainWidget* mainUI;
+	class UHpBar* hpBarUI;
 
 	
 		
