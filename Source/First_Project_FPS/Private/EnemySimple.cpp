@@ -34,7 +34,7 @@ AEnemySimple::AEnemySimple()
 
 
 	// Collision Presets을 Enemy 프리셋으로 변경
-	boxComp->SetCollisionProfileName(TEXT("EnemySimple"));
+	boxComp->SetCollisionProfileName(TEXT("EnemyBullet"));
 
 }
 
@@ -93,10 +93,7 @@ void AEnemySimple::SetDirection()
 
 			// 플레이어와의 거리
 			FVector length = player->GetActorLocation() - GetActorLocation();
-			double temp = length.Size();
 
-
-			UE_LOG(LogTemp, Warning, TEXT("%d"), temp);
 			dir.Normalize();
 		}
 	}

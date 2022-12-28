@@ -35,7 +35,6 @@ void AEnemySimpleFactory::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Range();
 }
 
 // Called every frame
@@ -48,9 +47,10 @@ void AEnemySimpleFactory::Tick(float DeltaTime)
 		
 		// 경과된 시간을 0초로 초기화한다.
 		currentTime = 0;
-
-		// enemy 변수에 할당된 블루프린트를 자신의 위치에 생성한다.
-		AEnemySimple* spawnActor = GetWorld()->SpawnActor<AEnemySimple>(enemy, GetActorLocation(), GetActorRotation());
+		if (Range()) {
+			// enemy 변수에 할당된 블루프린트를 자신의 위치에 생성한다.
+			AEnemySimple* spawnActor = GetWorld()->SpawnActor<AEnemySimple>(enemy, GetActorLocation(), GetActorRotation());
+		}
 
 	}
 	else  // 그렇지 않다면
@@ -67,8 +67,13 @@ bool AEnemySimpleFactory::Range()
 
 	FVector dir = playerCharacter->GetActorLocation() - GetActorLocation();
 	float dist = dir.Size();
-	UE_LOG(LogTemp, Warning, TEXT("%.1f"), dist);
-	return true;
+	UE_LOG(LogTemp, Warning, TEXT("Range : %.1f"), dist);
+
+	if (dist <= setDistance) {
+		return true;
+	}
+
+	return false;
 
 }
 

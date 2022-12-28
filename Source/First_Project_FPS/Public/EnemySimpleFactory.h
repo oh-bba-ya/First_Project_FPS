@@ -36,7 +36,7 @@ public:
 	class UStaticMeshComponent* meshComp;
 
 	UPROPERTY(EditAnywhere, Category = "EnemySpawn Settings")
-	float distance;
+	float setDistance;
 
 
 	bool Range();
