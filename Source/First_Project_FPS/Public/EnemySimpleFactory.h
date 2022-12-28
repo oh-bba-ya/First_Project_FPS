@@ -35,10 +35,18 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* meshComp;
 
+	UPROPERTY(EditAnywhere, Category = "EnemySpawn Settings")
+	float distance;
+
+
+	bool Range();
+
 	
 
 private:
 	float currentTime = 0;
+
+
 
 
 

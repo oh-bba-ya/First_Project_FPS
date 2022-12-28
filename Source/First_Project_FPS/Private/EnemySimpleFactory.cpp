@@ -5,6 +5,10 @@
 #include "EnemySimple.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "PlayerCharacter.h"
+#include "Math/Vector.h"
+
 
 // Sets default values
 AEnemySimpleFactory::AEnemySimpleFactory()
@@ -31,6 +35,7 @@ void AEnemySimpleFactory::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Range();
 }
 
 // Called every frame
@@ -52,6 +57,18 @@ void AEnemySimpleFactory::Tick(float DeltaTime)
 	{
 		currentTime += DeltaTime;
 	}
+
+}
+
+bool AEnemySimpleFactory::Range()
+{
+	auto character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	APlayerCharacter* playerCharacter = Cast<APlayerCharacter>(character);
+
+	FVector dir = playerCharacter->GetActorLocation() - GetActorLocation();
+	float dist = dir.Size();
+	UE_LOG(LogTemp, Warning, TEXT("%.1f"), dist);
+	return true;
 
 }
 
