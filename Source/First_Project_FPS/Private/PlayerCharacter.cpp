@@ -294,3 +294,8 @@ void APlayerCharacter::SetHealth(float health)
 	hp = health;
 }
 
+void APlayerCharacter::AddBullet(int count)
+{
+
+}
+

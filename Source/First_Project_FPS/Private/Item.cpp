@@ -4,6 +4,7 @@
 #include "Item.h"
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "PlayerCharacter.h"
 
 // Sets default values
 AItem::AItem()
@@ -20,7 +21,7 @@ AItem::AItem()
 	meshComp->SetupAttachment(RootComponent);
 
 
-
+	meshComp->SetCollisionProfileName(TEXT("EnemyBullet"));
 
 }
 
@@ -28,6 +29,7 @@ AItem::AItem()
 void AItem::BeginPlay()
 {
 	Super::BeginPlay();
+	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AItem::PickUpOverlap);
 	
 }
 
@@ -36,18 +38,21 @@ void AItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	AutoRotation(DeltaTime);
+	AutoRotation();
 
 }
 
 void AItem::PickUpOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	APlayerCharacter* player = Cast<APlayerCharacter>(OtherActor);
 
+	if (player != nullptr) {
+		Destroy();
+	}
 }
 
-void AItem::AutoRotation(float deltaTime)
+void AItem::AutoRotation()
 {
-	rotationSpeed = deltaTime + rotationSpeed;
 	FRotator rot = GetActorRotation();
 
 

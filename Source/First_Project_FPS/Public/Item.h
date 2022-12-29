@@ -34,7 +34,7 @@ public:
 	void PickUpOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void AutoRotation(float deltaTime);
+	void AutoRotation();
 
 	UPROPERTY(EditAnyWhere, Category = "Item Settings")
 	float rotationSpeed = 1;
