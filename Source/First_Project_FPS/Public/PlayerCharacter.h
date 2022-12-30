@@ -110,7 +110,9 @@ public:
 	UPROPERTY(meta = (BindWidget))
 		class UProgressBar* PB_hpBar;
 
-	void AddBullet(int count);
+	void AddBomb(int count);
+
+	void AddMachineGun(int count);
 
 private:
 	// 현재 체력
@@ -123,7 +125,9 @@ private:
 	// 현재 뷰 포트에 로드된 위젯 저장용 변수
 	class UHpBar* hpBarUI;
 
-	int ammo = 0;
+	int bombCount = 10;
+
+	int machineGunCount = 0;
 
 
 	

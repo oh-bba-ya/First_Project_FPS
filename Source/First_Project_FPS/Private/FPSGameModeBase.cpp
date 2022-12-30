@@ -30,9 +30,6 @@ void AFPSGameModeBase::PrintScore()
 	if (mainUI != nullptr) {
 		// ScoreData 텍스트 블록에 현재 점수 값을 입력한다.
 		mainUI->scoreData->SetText(FText::AsNumber(currentScore));
-		//mainUI->hpBar->SetPercent(player->GetCurrentHealth() / player->GetMaxHealth());
-		//float curPercent = mainUI->hpBar->GetPercent();
-		//UE_LOG(LogTemp, Warning, TEXT("Percent : %.1f"), curPercent);
 	}
 }
 

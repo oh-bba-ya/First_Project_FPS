@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "HpBar.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 
 
 
@@ -108,6 +109,8 @@ void APlayerCharacter::BeginPlay()
 		if (hpBarUI != nullptr) {
 			hpBarUI->AddToViewport();
 			hpBarUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth() * 100);
+			hpBarUI->bombCount->SetText(FText::AsNumber(bombCount));
+			hpBarUI->machineGunCount->SetText(FText::AsNumber(machineGunCount));
 		}
 
 	}
@@ -196,12 +199,14 @@ void APlayerCharacter::Move()
 void APlayerCharacter::InputFire()
 {
 	// 유탄총 사용시
-	if (bUsingGrenadeGun) {
+	if (bUsingGrenadeGun && bombCount >0) {
 		FTransform firePosition = gunMeshComp->GetSocketTransform(TEXT("FirePosition"));
 		GetWorld()->SpawnActor<ABullet>(bulletFactory, firePosition);
+		bombCount--;
+		hpBarUI->bombCount->SetText(FText::AsNumber(bombCount));
 
 	}
-	else // 스나이퍼건 사용시
+	else if(!bUsingGrenadeGun) // 스나이퍼건 사용시
 	{
 
 		// LineTrace의 시작 위치
@@ -294,8 +299,15 @@ void APlayerCharacter::SetHealth(float health)
 	hp = health;
 }
 
-void APlayerCharacter::AddBullet(int count)
+void APlayerCharacter::AddBomb(int count)
 {
+	bombCount += count;
+	hpBarUI->bombCount->SetText(FText::AsNumber(bombCount));
+}
 
+void APlayerCharacter::AddMachineGun(int count)
+{
+	machineGunCount += count;
+	hpBarUI->machineGunCount->SetText(FText::AsNumber(machineGunCount));
 }
 

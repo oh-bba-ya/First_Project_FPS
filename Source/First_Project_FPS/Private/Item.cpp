@@ -48,6 +48,17 @@ void AItem::PickUpOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 
 	if (player != nullptr) {
 		Destroy();
+		if (isPoint) {
+
+		}
+
+		if (isMachineGun) {
+			player->AddMachineGun(200);
+		}
+
+		if (isBomb) {
+			player->AddBomb(10);
+		}
 	}
 }
 

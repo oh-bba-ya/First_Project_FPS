@@ -18,5 +18,11 @@ class FIRST_PROJECT_FPS_API UHpBar : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 		class UProgressBar* hpBar;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* bombCount;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+		class UTextBlock* machineGunCount;
 	
 };

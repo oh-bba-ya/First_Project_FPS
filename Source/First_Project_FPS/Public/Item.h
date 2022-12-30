@@ -39,4 +39,19 @@ public:
 	UPROPERTY(EditAnyWhere, Category = "Item Settings")
 	float rotationSpeed = 1;
 
+
+	// ÃÑ¾ÆÀÌÅÛ
+	UPROPERTY(EditAnyWhere, Category = "Item Settings")
+		bool isMachineGun = false;
+
+	// ÆøÅº
+	UPROPERTY(EditAnyWhere, Category = "Item Settings")
+		bool isBomb = false;
+
+
+	// Á¡¼ö
+	UPROPERTY(EditAnyWhere, Category = "Item Settings")
+		bool isPoint = false;
+
+
 };
