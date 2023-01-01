@@ -71,8 +71,8 @@ void AEnemySimple::Tick(float DeltaTime)
 
 
 // Called every frame
-void AEnemySimple::Fire(float deltaTime)
-{
+void AEnemySimple::Fire(float deltaTime){
+
 	FVector newLocation = GetActorLocation() + dir * moveSpeed * deltaTime;
 	if (!isBossFire) {
 		// BeginPlay()에서 결정된 방향으로 이동한다.
