@@ -7,6 +7,7 @@
 #include "EnemySimple.h"
 #include "FPSGameModeBase.h"
 #include "EnemySimpleFactory.h"
+#include "EnemyBoss.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -118,13 +119,21 @@ void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	AEnemySimpleFactory* enemyFactory = Cast<AEnemySimpleFactory>(OtherActor);
 
 	if (enemyFactory != nullptr) {
-		UE_LOG(LogTemp, Warning, TEXT("Factory"));
 		enemyFactory->Destroy();
 
 		if (currentGameModeBase != nullptr) {
 			currentGameModeBase->AddScore(1);
 		}
 
+
+	}
+
+
+	// EnemyBoss Ä³½ºÆÃ
+	AEnemyBoss* enemyBoss = Cast<AEnemyBoss>(OtherActor);
+
+	if (enemyBoss != nullptr) {
+		enemyBoss->OnHitEvent();
 
 	}
 	

@@ -67,7 +67,6 @@ bool AEnemySimpleFactory::Range()
 
 	FVector dir = playerCharacter->GetActorLocation() - GetActorLocation();
 	float dist = dir.Size();
-	UE_LOG(LogTemp, Warning, TEXT("Range : %.1f"), dist);
 
 	if (dist <= setDistance) {
 		return true;

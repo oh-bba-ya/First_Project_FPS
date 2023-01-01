@@ -125,7 +125,8 @@ private:
 	// 현재 뷰 포트에 로드된 위젯 저장용 변수
 	class UHpBar* hpBarUI;
 
-	int bombCount = 10;
+	UPROPERTY(EditAnywhere, Category = Bullet)
+	int bombCount = 100;
 
 	int machineGunCount = 0;
 

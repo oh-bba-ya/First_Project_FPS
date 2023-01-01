@@ -41,6 +41,11 @@ public:
 
 	void Fire(float deltaTime);
 
+	UPROPERTY(EditAnywhere)
+		bool isBossFire = false;
+
+
+
 
 
 	UFUNCTION()
@@ -50,5 +55,7 @@ public:
 private:
 	// Enemy에서 플레이어 방향
 	FVector dir;
+
+	
 
 };
