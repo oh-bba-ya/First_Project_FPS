@@ -9,6 +9,10 @@
 #include "HpBar.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/ArrowComponent.h"
+#include "EnemyBoss.h"
+
+
 
 
 
@@ -18,13 +22,21 @@ APlayerCharacter::APlayerCharacter()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+
+
+
+
 	// 1. 스켈레탈메시 데이터를 불러오고 싶다.
 	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/Characters/Mannequin_UE4/Meshes/SK_Mannequin.SK_Mannequin'"));
 	if (TempMesh.Succeeded()) {
 		GetMesh()->SetSkeletalMesh(TempMesh.Object);
 
 		// 2.Mesh 컴포넌트의 위치와 회전값을 설정하고 싶다.
-		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, -90, 0));
+		GetMesh()->SetRelativeLocationAndRotation(FVector(0, 0, -90), FRotator(0, 0, 0));
+
+		originMeshRot = GetMesh()->GetRelativeRotation();
+
+
 	}
 
 	// 3.TPS 카메라 부착
@@ -63,6 +75,8 @@ APlayerCharacter::APlayerCharacter()
 		gunMeshComp->SetSkeletalMesh(TempGunMesh.Object);
 		// 4-5. 위치 조정하기
 		gunMeshComp->SetRelativeLocation(FVector(-14, 52, 120));
+		originGunMeshLoc = gunMeshComp->GetRelativeLocation();
+		originGunMeshRot = gunMeshComp->GetRelativeRotation();
 	}
 
 	// 5. 스나이퍼건(레이저총) 컴포넌트 등록
@@ -84,11 +98,23 @@ APlayerCharacter::APlayerCharacter()
 
 		// 5-6. 크기 조정하기
 		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
+
+		originSniperMeshLoc = sniperGunComp->GetRelativeLocation();
+		originSniperMeshRot = sniperGunComp->GetRelativeRotation();
 	}
 
 
 	// 초기 체력 설정
 	hp = initialHp;
+
+	// Arrow Component 생성
+	arrowComp = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnArrow"));
+
+	arrowComp->SetupAttachment(gunMeshComp);
+
+	arrowComp->SetRelativeLocationAndRotation(FVector(0,60,0), FRotator(90.f,0,0));
+
+
 
 
 }
@@ -97,6 +123,8 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 
 	// 기본으로 스나이퍼건을 사용하도록 설정.
 	ChangeToSniperGun();
@@ -132,13 +160,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Turn , LookUp 바인딩
-	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &APlayerCharacter::Turn);
-	PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &APlayerCharacter::LookUp);
 
 	// 좌우 입력 이벤트 처리 함수 바인딩
 	PlayerInputComponent->BindAxis(TEXT("Horizontal"), this, &APlayerCharacter::InputHorizontal);
-	PlayerInputComponent->BindAxis(TEXT("Vertical"), this, &APlayerCharacter::InputVertical);
+
+
+	// 위 방향 입력 이벤트 처리 함수 바인딩
+	PlayerInputComponent->BindAction(TEXT("DirectionUp"),IE_Pressed, this, &APlayerCharacter::InputDirectionUp);
+	PlayerInputComponent->BindAction(TEXT("DirectionUp"), IE_Released, this, &APlayerCharacter::InputDirectionUp);
+
 
 	// 점프 입력 이벤트 처리 함수 바인딩
 	PlayerInputComponent->BindAction(TEXT("Jump"), IE_Pressed, this, &APlayerCharacter::InputJump);
@@ -153,30 +183,50 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 
-// 좌우 회전 입력 정의
-void APlayerCharacter::Turn(float value) {
-	AddControllerYawInput(value);
-}
-
-// 상하 회전 입력 정의
-void APlayerCharacter::LookUp(float value) {
-	AddControllerPitchInput(value);
-}
 
 void APlayerCharacter::InputHorizontal(float value)
 {
 	direction.Y = value;
+	if (value < 0) {
+		gunMeshComp->SetRelativeLocationAndRotation(originGunMeshLoc, originGunMeshRot);
+		GetMesh()->SetRelativeRotation(FRotator(0,180.f,0));
+
+	}
+	else if(value > 0) {
+		gunMeshComp->SetRelativeLocationAndRotation(originGunMeshLoc, originGunMeshRot);
+		GetMesh()->SetRelativeRotation(originMeshRot);
+	}
+	
 }
 
-void APlayerCharacter::InputVertical(float value)
-{
-	direction.X = value;
-}
 
 void APlayerCharacter::InputJump()
 {
 	Jump();
 }
+
+void APlayerCharacter::InputDirectionUp()
+{
+	FRotator rot = { 0,0,0 };
+	FVector loc = { 0,0,0 };
+	
+
+	isUp = !isUp;
+	if(isUp){
+		UE_LOG(LogTemp, Warning, TEXT("Up key Down"));
+		loc = { 0,0,240.f };
+		rot = { 0,0,-90.f };
+		gunMeshComp->SetRelativeLocationAndRotation(loc, rot);
+		sniperGunComp->SetRelativeLocationAndRotation(loc, rot);
+	}
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("Up key Up"));
+		gunMeshComp->SetRelativeLocationAndRotation(originGunMeshLoc, originGunMeshRot);
+		sniperGunComp->SetRelativeLocationAndRotation(originSniperMeshLoc, originSniperMeshRot);
+	}
+}
+
+
 
 void APlayerCharacter::Move()
 {
@@ -210,11 +260,11 @@ void APlayerCharacter::InputFire()
 	{
 
 		// LineTrace의 시작 위치
-		FVector startPos = tpsCamComp->GetComponentLocation();
+		FVector startPos = arrowComp->GetComponentLocation();
 
 
 		// LineTrace의 종료 위치
-		FVector endPos = tpsCamComp->GetComponentLocation() + tpsCamComp->GetForwardVector() * 5000;
+		FVector endPos = arrowComp->GetComponentLocation() + arrowComp->GetForwardVector() * 5000;
 
 		// LineTrace의 충돌 정보를 담을 변수
 		FHitResult hitInfo;
@@ -249,6 +299,19 @@ void APlayerCharacter::InputFire()
 
 				// 3. 그 방향으로 날린다. 
 				hitComp->AddForce(force);
+			}
+			else { // 만약 물리가 없다면
+				if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyBoss"))) {
+					AEnemyBoss* boss = Cast<AEnemyBoss>(hitInfo.GetActor());
+					boss->OnHitEvent();
+						
+				}
+				else if(hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemySimpleFactory"))){
+					hitInfo.GetActor()->Destroy();
+				}
+					
+
+
 			}
 		}
 

@@ -114,15 +114,15 @@ void AEnemyBoss::Fire()
 	AEnemySimple* enemyBulletActor = GetWorld()->SpawnActor<AEnemySimple>(enemyBullet, GetActorLocation(), GetActorRotation());
 }
 
-void AEnemyBoss::OnHitEvent()
+void AEnemyBoss::OnHitEvent(int32 d)
 {
 	if (bossHP > 0) {
-		bossHP--;
-		UE_LOG(LogTemp, Warning, TEXT("BOSS HIT"));
+		bossHP-=d;
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("BOSS Destory"));
 		Destroy();
 	}
 }
+
+
 

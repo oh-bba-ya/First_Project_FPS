@@ -46,16 +46,22 @@ ABullet::ABullet()
 	movementComp->SetUpdatedComponent(collisionComp);
 
 	// 초기속도
-	movementComp->InitialSpeed = 5000;
+	movementComp->InitialSpeed = 1000;
 
 	// 최대속도
-	movementComp->MaxSpeed = 5000;
+	movementComp->MaxSpeed = 1000;
 
 	// 반동 여부
 	movementComp->bShouldBounce = true;
 
 	// 반동 값
 	movementComp->Bounciness = 0.3f;
+
+	// 중력
+	movementComp->ProjectileGravityScale = 5.f;
+
+	// 회전
+	movementComp->bRotationFollowsVelocity = true;
 
 	// 생명 시간 주기 (단순한 제거 방법 2가지 중 첫번째 )
 	//InitialLifeSpan = 2.0f;
@@ -87,10 +93,7 @@ void ABullet::BeginPlay()
 		FTimerDelegate::CreateLambda([this]()->void {
 			Destroy();
 		})
-		, 8.0f, false);
-
-	
-
+		, 5.0f, false);
 	
 }
 
@@ -124,16 +127,13 @@ void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		if (currentGameModeBase != nullptr) {
 			currentGameModeBase->AddScore(1);
 		}
-
-
 	}
-
 
 	// EnemyBoss 캐스팅
 	AEnemyBoss* enemyBoss = Cast<AEnemyBoss>(OtherActor);
 
 	if (enemyBoss != nullptr) {
-		enemyBoss->OnHitEvent();
+		enemyBoss->OnHitEvent(damage);
 
 	}
 	

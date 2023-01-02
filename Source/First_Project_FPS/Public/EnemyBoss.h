@@ -40,12 +40,13 @@ public:
 
 	void Fire();
 
-	void OnHitEvent();
+	UFUNCTION()
+	void OnHitEvent(int32 d = 1);
 
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Boss Settings")
-		float bossHP = 10;
+		int32 bossHP = 10;
 
 	UPROPERTY(EditAnywhere, Category = "Boss Settings")
 	float moveSpeed = 100;

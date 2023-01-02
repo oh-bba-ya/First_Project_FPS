@@ -37,11 +37,12 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* tpsCamComp;
 
-	// 좌우 회전 입력처리
-	void Turn(float value);
+	// Arrow component 선언
+	UPROPERTY(VisibleAnywhere, Category = Arrow)
+		class UArrowComponent* arrowComp;
 
-	// 상하 회전 입력 처리
-	void LookUp(float value);
+
+
 
 	// 이동속도
 	UPROPERTY(EditAnywhere, Category = "PlayerSetting")
@@ -53,11 +54,13 @@ public:
 	// 좌우 이동 입력 이벤트 처리 함수
 	void InputHorizontal(float value);
 
-	// 상하 이동 입력 이벤트 처리 함수
-	void InputVertical(float value);
 
 	// 점프 입력 이벤트 처리 함수
 	void InputJump();
+
+	// 위 방향 이벤트 처리 함수
+	void InputDirectionUp();
+
 
 
 	// 플레이어 이동 처리 함수
@@ -103,7 +106,7 @@ public:
 	UFUNCTION()
 	void SetHealth(float health);
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Widget)
 		TSubclassOf<class UHpBar> hpBarWidget;
 
 
@@ -129,6 +132,19 @@ private:
 	int bombCount = 100;
 
 	int machineGunCount = 0;
+
+	bool isUp = false;
+	bool isDown = false;
+
+
+	FRotator originMeshRot;
+
+	FVector originGunMeshLoc;
+	FRotator originGunMeshRot;
+
+	FVector originSniperMeshLoc;
+	FRotator originSniperMeshRot;
+
 
 
 	
