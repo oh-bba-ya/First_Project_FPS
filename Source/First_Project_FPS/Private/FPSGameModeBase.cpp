@@ -22,7 +22,6 @@ void AFPSGameModeBase::BeginPlay()
 		}
 	}
 
-
 }
 
 void AFPSGameModeBase::PrintScore()
