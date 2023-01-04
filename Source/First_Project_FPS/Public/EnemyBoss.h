@@ -67,6 +67,8 @@ private:
 
 	float curTime = 0;
 
+	class AFPSGameModeBase* myGameMode;
+
 
 
 

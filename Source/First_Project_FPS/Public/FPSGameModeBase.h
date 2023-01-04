@@ -20,7 +20,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class UMainWidget>mainWidget;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UStartWidget>startWidget;
+
 	class APlayerCharacter* player;
+
+	void ShowStart();
+
+	void ShowEnd();
+
+	void ChangeText();
 
 
 protected:
@@ -33,6 +42,8 @@ private:
 
 	// 현재 뷰 포트에 로드된 위젯 저장용 변수
 	class UMainWidget* mainUI;
+
+	class UStartWidget* startUI;
 
 
 

@@ -8,6 +8,7 @@
 #include "EngineUtils.h"
 #include "Math/UnrealMathUtility.h"
 #include "EnemySimple.h"
+#include "FPSGameModeBase.h"
 
 
 // Sets default values
@@ -118,6 +119,11 @@ void AEnemyBoss::OnHitEvent(int32 d)
 {
 	if (bossHP > 0) {
 		bossHP-=d;
+		if (bossHP == 0) {
+			Destroy();
+			myGameMode = Cast<AFPSGameModeBase>(GetWorld()->GetAuthGameMode());
+			myGameMode->ShowEnd();
+		}
 	}
 	else {
 		Destroy();

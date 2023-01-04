@@ -6,11 +6,14 @@
 #include "MainWidget.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerCharacter.h"
+#include "StartWidget.h"
 
 
 void AFPSGameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 
 	if (mainWidget != nullptr) {
 		// mainWidget 블루프린트 파일을 메모리에 로드한다.
@@ -18,10 +21,10 @@ void AFPSGameModeBase::BeginPlay()
 
 		// 위젯이 메모리에 로드되면 뷰 포트에 출력한다.
 		if (mainUI != nullptr) {
+			ShowStart();
 			mainUI->AddToViewport();
 		}
 	}
-
 }
 
 void AFPSGameModeBase::PrintScore()
@@ -41,4 +44,52 @@ void AFPSGameModeBase::AddScore(int32 point)
 	PrintScore();
 }
 
+void AFPSGameModeBase::ShowStart()
+{
+	
+	if (startWidget != nullptr) {
+		startUI = CreateWidget<UStartWidget>(GetWorld(), startWidget);
+
+		if (startUI != nullptr) {
+
+			// 생성된 위젯을 뷰포트에 출력한다.
+			startUI->AddToViewport();
+
+			// 게임을 일시정시 상태로 만든다.
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+			// 마우스 커서 나타내기
+			GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+		}
+
+	}
+
+}
+
+void AFPSGameModeBase::ShowEnd()
+{
+	if (startWidget != nullptr) {
+		startUI = CreateWidget<UStartWidget>(GetWorld(), startWidget);
+
+		if (startUI != nullptr) {
+			FString text = FString(TEXT("Game Clear"));
+			startUI->text_Title->SetText(FText::FromString(text));
+			// 생성된 위젯을 뷰포트에 출력한다.
+			startUI->AddToViewport();
+
+			// 게임을 일시정시 상태로 만든다.
+			UGameplayStatics::SetGamePaused(GetWorld(), true);
+
+			// 마우스 커서 나타내기
+			GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+		}
+
+	}
+
+}
+
+void AFPSGameModeBase::ChangeText()
+{
+
+}
 
