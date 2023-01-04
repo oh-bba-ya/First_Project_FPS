@@ -5,6 +5,7 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"		// 헤더파일 추가
 #include "EnemySimple.h"
+#include "EnemyCharacter.h"
 #include "FPSGameModeBase.h"
 #include "EnemySimpleFactory.h"
 #include "EnemyBoss.h"
@@ -127,6 +128,14 @@ void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		if (currentGameModeBase != nullptr) {
 			currentGameModeBase->AddScore(1);
 		}
+	}
+
+	// EnemyCharacter 캐스팅
+	AEnemyCharacter* enemyCharacter = Cast<AEnemyCharacter>(OtherActor);
+
+	if (enemyCharacter != nullptr) {
+		enemyCharacter->EnemyHitEvent(damage);
+
 	}
 
 	// EnemyBoss 캐스팅

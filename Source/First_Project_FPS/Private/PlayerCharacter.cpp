@@ -11,6 +11,7 @@
 #include "Components/TextBlock.h"
 #include "Components/ArrowComponent.h"
 #include "EnemyBoss.h"
+#include "EnemyCharacter.h"
 
 
 
@@ -312,6 +313,10 @@ void APlayerCharacter::InputFire()
 				}
 				else if(hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemySimpleFactory"))){
 					hitInfo.GetActor()->Destroy();
+				}
+				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyCharacter"))){
+					AEnemyCharacter* enemyCh = Cast<AEnemyCharacter>(hitInfo.GetActor());
+					enemyCh->EnemyHitEvent(1);
 				}
 					
 
