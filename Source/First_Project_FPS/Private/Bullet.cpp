@@ -9,6 +9,8 @@
 #include "FPSGameModeBase.h"
 #include "EnemySimpleFactory.h"
 #include "EnemyBoss.h"
+#include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -112,6 +114,15 @@ void ABullet::Die()
 
 void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (NS_Explosion != nullptr) {
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_Explosion, GetActorLocation());
+	}
+
+	if (SB_Explosion != nullptr) {
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), SB_Explosion, GetActorLocation());
+	}
+
+
 	// 현재 게임 모드를 가져온다.
 	AGameModeBase* currentMode = GetWorld()->GetAuthGameMode();
 
