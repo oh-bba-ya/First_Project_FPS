@@ -9,6 +9,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "EnemySimple.h"
 #include "FPSGameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -29,14 +30,18 @@ AEnemyBoss::AEnemyBoss()
 	// 2-2. 스태틱 메쉬 위치 조정
 	meshComp->SetRelativeLocation(FVector(0, 0, -50));
 
+
+
+
 }
 
 // Called when the game starts or when spawned
 void AEnemyBoss::BeginPlay()
 {
 	Super::BeginPlay();
+
 	SetDirection();
-	
+
 }
 
 // Called every frame
@@ -51,6 +56,7 @@ void AEnemyBoss::Tick(float DeltaTime)
 
 void AEnemyBoss::SetDirection()
 {
+
 	for (TActorIterator<APlayerCharacter> player(GetWorld()); player; ++player) {
 		if (player->GetName().Contains(TEXT("BP_PlayerCharacter"))) {
 
@@ -62,6 +68,7 @@ void AEnemyBoss::SetDirection()
 			direction.Normalize();
 		}
 	}
+	
 
 	
 }

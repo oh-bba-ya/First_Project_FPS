@@ -12,11 +12,9 @@ void UStartWidget::NativeConstruct() {
 }
 
 void UStartWidget::StartGame() {
-	// 시간 다시흐름
-	UGameplayStatics::SetGamePaused(GetWorld(), false);
 
-	// 마우스 커서 OFF
-	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+	UGameplayStatics::OpenLevel(GetWorld(), TEXT("ShootingMap"));
+
 
 	this->RemoveFromViewport();
 }

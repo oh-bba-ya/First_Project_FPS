@@ -25,11 +25,12 @@ public:
 
 	class APlayerCharacter* player;
 
+	UFUNCTION()
 	void ShowStart();
 
+	UFUNCTION()
 	void ShowEnd();
 
-	void ChangeText();
 
 
 protected:

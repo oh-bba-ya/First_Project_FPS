@@ -12,6 +12,7 @@
 #include "Components/ArrowComponent.h"
 #include "EnemyBoss.h"
 #include "EnemyCharacter.h"
+#include "FPSGameModeBase.h"
 
 
 
@@ -129,7 +130,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	myGM = Cast<AFPSGameModeBase>(GetWorld()->GetAuthGameMode());
 
 	// 기본으로 스나이퍼건을 사용하도록 설정.
 	ChangeToSniperGun();
@@ -147,6 +148,8 @@ void APlayerCharacter::BeginPlay()
 		}
 
 	}
+
+
 	
 }
 
@@ -352,6 +355,7 @@ void APlayerCharacter::OnHitEvent()
 	UE_LOG(LogTemp, Warning, TEXT("Damaged!! %.1f"),hp);
 	if (hp <= 0) {
 		hp = 0;
+		myGM->ShowStart();
 		UE_LOG(LogTemp, Warning, TEXT("You Die!!"));
 	}
 }
@@ -381,5 +385,11 @@ void APlayerCharacter::AddMachineGun(int count)
 {
 	machineGunCount += count;
 	hpBarUI->machineGunCount->SetText(FText::AsNumber(machineGunCount));
+}
+
+
+void APlayerCharacter::PlayerDead()
+{
+
 }
 

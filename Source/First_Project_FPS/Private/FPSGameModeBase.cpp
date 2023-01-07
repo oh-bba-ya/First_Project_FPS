@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+#pragma once
 
-
+#include "GameOverWidget.h"
 #include "FPSGameModeBase.h"
 #include "Blueprint/UserWidget.h"
 #include "MainWidget.h"
@@ -11,9 +12,9 @@
 
 void AFPSGameModeBase::BeginPlay()
 {
-	Super::BeginPlay();
+	//Super::BeginPlay();
 
-	
+	player = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 	if (mainWidget != nullptr) {
 		// mainWidget 블루프린트 파일을 메모리에 로드한다.
@@ -21,7 +22,6 @@ void AFPSGameModeBase::BeginPlay()
 
 		// 위젯이 메모리에 로드되면 뷰 포트에 출력한다.
 		if (mainUI != nullptr) {
-			ShowStart();
 			mainUI->AddToViewport();
 		}
 	}
@@ -51,7 +51,6 @@ void AFPSGameModeBase::ShowStart()
 		startUI = CreateWidget<UStartWidget>(GetWorld(), startWidget);
 
 		if (startUI != nullptr) {
-
 			// 생성된 위젯을 뷰포트에 출력한다.
 			startUI->AddToViewport();
 
@@ -88,8 +87,5 @@ void AFPSGameModeBase::ShowEnd()
 
 }
 
-void AFPSGameModeBase::ChangeText()
-{
 
-}
 

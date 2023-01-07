@@ -117,6 +117,8 @@ public:
 
 	void AddMachineGun(int count);
 
+
+
 private:
 	// 현재 체력
 	float hp;
@@ -127,6 +129,7 @@ private:
 
 	// 현재 뷰 포트에 로드된 위젯 저장용 변수
 	class UHpBar* hpBarUI;
+
 
 	UPROPERTY(EditAnywhere, Category = Bullet)
 	int bombCount = 100;
@@ -144,6 +147,11 @@ private:
 
 	FVector originSniperMeshLoc;
 	FRotator originSniperMeshRot;
+
+	void PlayerDead();
+
+
+	class AFPSGameModeBase* myGM;
 
 
 
