@@ -86,24 +86,23 @@ APlayerCharacter::APlayerCharacter()
 	}
 
 	// 5. 스나이퍼건(레이저총) 컴포넌트 등록
-	sniperGunComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SniperGunComp"));
+	sniperGunComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SniperGunComp"));
 	
 	// 5-1. 부모 컴포넌트를 Mesh 컴포넌트로 설정
 	sniperGunComp->SetupAttachment(GetMesh());
 
+
 	// 5-2. 스태틱메시 데이터 로드 (임시로 Pipe(파이프)로 함)
-	ConstructorHelpers::FObjectFinder<UStaticMesh> TempSniperMesh(TEXT("/Script/Engine.StaticMesh'/Game/StarterContent/Shapes/Shape_Pipe.Shape_Pipe'"));
+	ConstructorHelpers::FObjectFinder<USkeletalMesh> TempSniperMesh(TEXT("/Script/Engine.SkeletalMesh'/Game/MyResources/FPWeapon/Mesh/SK_FPGun_2.SK_FPGun_2'"));
 
 	// 5-3. 데이터 로드가 성공했다면
 	if (TempSniperMesh.Succeeded()) {
 		// 5-4. 스태틱 메시 데이터 할당
-		sniperGunComp->SetStaticMesh(TempSniperMesh.Object);
+		sniperGunComp->SetSkeletalMesh(TempSniperMesh.Object);
 
 		// 5-5. 위치 조정하기
 		sniperGunComp->SetRelativeLocation(FVector(-22, 55, 120));
 
-		// 5-6. 크기 조정하기
-		sniperGunComp->SetRelativeScale3D(FVector(0.15f));
 
 		originSniperMeshLoc = sniperGunComp->GetRelativeLocation();
 		originSniperMeshRot = sniperGunComp->GetRelativeRotation();
@@ -265,6 +264,22 @@ void APlayerCharacter::InputFire()
 	else if(!bUsingGrenadeGun) // 스나이퍼건 사용시
 	{
 
+		if (machineGunCount <= 0) {
+			FTransform firePosition = sniperGunComp->GetSocketTransform(TEXT("FirePosition"));
+			GetWorld()->SpawnActor<ABullet>(basicBullet, firePosition);
+			return;
+		}
+
+
+		if (SB_Laser != nullptr) {
+			// 총알 발사 효과음을 실행한다.
+			UGameplayStatics::PlaySound2D(this, SB_Laser);
+
+		}
+
+		machineGunCount -= 1;
+		hpBarUI->machineGunCount->SetText(FText::AsNumber(machineGunCount));
+
 		// LineTrace의 시작 위치
 		FVector startPos = arrowComp->GetComponentLocation();
 
@@ -284,6 +299,8 @@ void APlayerCharacter::InputFire()
 		// Channel 필터를 이용한 LineTrace 충돌 검충(충돌 정보, 시작 위치, 종료 위치, 검출 채널, 충돌 옵션)
 		bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECC_Visibility, params);
 
+
+
 		// LineTrace가 부딪혔을 때
 		if (bHit) {
 			// 충돌 처리-> 총알 파편 효과 재생
@@ -298,6 +315,22 @@ void APlayerCharacter::InputFire()
 			// 맞을 물체 컴포넌트 
 			auto hitComp = hitInfo.GetComponent();
 
+			if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyBoss"))) {
+				AEnemyBoss* boss = Cast<AEnemyBoss>(hitInfo.GetActor());
+				boss->OnHitEvent();
+
+			}
+			else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemySimpleFactory"))) {
+				myGM->AddScore(1);
+				hitInfo.GetActor()->Destroy();
+			}
+			else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyCharacter"))) {
+				AEnemyCharacter* enemyCh = Cast<AEnemyCharacter>(hitInfo.GetActor());
+				enemyCh->EnemyHitEvent(1);
+			}
+
+
+			/*
 			// 1. 만약 컴포넌트에 물리가 적용되어 있다면
 			if (hitComp && hitComp->IsSimulatingPhysics()) {
 				// 2. 날려버릴 힘과 방향이 필요 , F = ma 뉴턴 운동법칙
@@ -307,34 +340,10 @@ void APlayerCharacter::InputFire()
 				hitComp->AddForce(force);
 			}
 			else { // 만약 물리가 없다면
-				if (machineGunCount > 0) {
-					machineGunCount -= 1;
-					hpBarUI->machineGunCount->SetText(FText::AsNumber(machineGunCount));
-					/*
-					if (NS_Laser != nullptr) {
-						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_Laser,startPos, arrowComp->GetRelativeRotation());
-					}
-					*/
-
-				}
-				if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyBoss"))) {
-					AEnemyBoss* boss = Cast<AEnemyBoss>(hitInfo.GetActor());
-					boss->OnHitEvent();
-
-				}
-				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemySimpleFactory"))) {
-					myGM->AddScore(1);
-					hitInfo.GetActor()->Destroy();
-				}
-				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyCharacter"))) {
-					AEnemyCharacter* enemyCh = Cast<AEnemyCharacter>(hitInfo.GetActor());
-					enemyCh->EnemyHitEvent(1);
-				}
-
-					
-
-
+			
 			}
+			*/
+			
 		}
 
 	}

@@ -32,9 +32,6 @@ void AItem::BeginPlay()
 	Super::BeginPlay();
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AItem::PickUpOverlap);
 
-	if (NS_Ring != nullptr) {
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_Ring, GetActorLocation());
-	}
 	
 }
 
@@ -59,6 +56,10 @@ void AItem::PickUpOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 
 		if (isMachineGun) {
 			player->AddMachineGun(200);
+			if (NS_Fire != nullptr) {
+				//UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_Fire, GetActorLocation(), FRotator::ZeroRotator);
+				UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAttached(NS_Fire, boxComp, NAME_None, GetActorLocation(), FRotator::ZeroRotator, EAttachLocation::Type::KeepRelativeOffset, true);
+			}
 		}
 
 		if (isBomb) {
