@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "PlayerCharacter.h"
+#include "NiagaraFunctionLibrary.h"
 
 // Sets default values
 AItem::AItem()
@@ -30,6 +31,10 @@ void AItem::BeginPlay()
 {
 	Super::BeginPlay();
 	boxComp->OnComponentBeginOverlap.AddDynamic(this, &AItem::PickUpOverlap);
+
+	if (NS_Ring != nullptr) {
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_Ring, GetActorLocation());
+	}
 	
 }
 

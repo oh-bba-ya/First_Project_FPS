@@ -13,7 +13,7 @@
 #include "EnemyBoss.h"
 #include "EnemyCharacter.h"
 #include "FPSGameModeBase.h"
-
+#include "NiagaraFunctionLibrary.h"
 
 
 
@@ -221,14 +221,12 @@ void APlayerCharacter::InputDirectionUp()
 
 	isUp = !isUp;
 	if(isUp){
-		UE_LOG(LogTemp, Warning, TEXT("Up key Down"));
 		loc = { 0,0,240.f };
 		rot = { 0,0,-90.f };
 		gunMeshComp->SetRelativeLocationAndRotation(loc, rot);
 		sniperGunComp->SetRelativeLocationAndRotation(loc, rot);
 	}
 	else {
-		UE_LOG(LogTemp, Warning, TEXT("Up key Up"));
 		gunMeshComp->SetRelativeLocationAndRotation(originGunMeshLoc, originGunMeshRot);
 		sniperGunComp->SetRelativeLocationAndRotation(originSniperMeshLoc, originSniperMeshRot);
 	}
@@ -309,18 +307,29 @@ void APlayerCharacter::InputFire()
 				hitComp->AddForce(force);
 			}
 			else { // 만약 물리가 없다면
+				if (machineGunCount > 0) {
+					machineGunCount -= 1;
+					hpBarUI->machineGunCount->SetText(FText::AsNumber(machineGunCount));
+					/*
+					if (NS_Laser != nullptr) {
+						UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), NS_Laser,startPos, arrowComp->GetRelativeRotation());
+					}
+					*/
+
+				}
 				if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyBoss"))) {
 					AEnemyBoss* boss = Cast<AEnemyBoss>(hitInfo.GetActor());
 					boss->OnHitEvent();
-						
+
 				}
-				else if(hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemySimpleFactory"))){
+				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemySimpleFactory"))) {
 					hitInfo.GetActor()->Destroy();
 				}
-				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyCharacter"))){
+				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyCharacter"))) {
 					AEnemyCharacter* enemyCh = Cast<AEnemyCharacter>(hitInfo.GetActor());
 					enemyCh->EnemyHitEvent(1);
 				}
+
 					
 
 
@@ -352,11 +361,9 @@ void APlayerCharacter::OnHitEvent()
 	
 	hp-= 10;
 	hpBarUI->hpBar->SetPercent(GetCurrentHealth() / GetMaxHealth());
-	UE_LOG(LogTemp, Warning, TEXT("Damaged!! %.1f"),hp);
 	if (hp <= 0) {
 		hp = 0;
 		myGM->ShowStart();
-		UE_LOG(LogTemp, Warning, TEXT("You Die!!"));
 	}
 }
 
@@ -388,8 +395,5 @@ void APlayerCharacter::AddMachineGun(int count)
 }
 
 
-void APlayerCharacter::PlayerDead()
-{
 
-}
 

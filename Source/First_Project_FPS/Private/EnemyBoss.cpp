@@ -126,7 +126,8 @@ void AEnemyBoss::OnHitEvent(int32 d)
 {
 	if (bossHP > 0) {
 		bossHP-=d;
-		if (bossHP == 0) {
+		UE_LOG(LogTemp, Warning, TEXT("HP : %d"), bossHP);
+		if (bossHP <= 0) {
 			Destroy();
 			myGameMode = Cast<AFPSGameModeBase>(GetWorld()->GetAuthGameMode());
 			myGameMode->ShowEnd();

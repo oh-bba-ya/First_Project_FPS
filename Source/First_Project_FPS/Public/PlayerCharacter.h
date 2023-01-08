@@ -118,6 +118,13 @@ public:
 	void AddMachineGun(int count);
 
 
+	UPROPERTY(EditAnywhere, Category = Niagara)
+		class UNiagaraSystem* NS_Laser;
+
+	UPROPERTY(EditAnywhere, Category = Niagara)
+		class USoundBase* SB_Laser;
+
+
 
 private:
 	// 현재 체력
@@ -147,8 +154,6 @@ private:
 
 	FVector originSniperMeshLoc;
 	FRotator originSniperMeshRot;
-
-	void PlayerDead();
 
 
 	class AFPSGameModeBase* myGM;

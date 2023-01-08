@@ -53,5 +53,8 @@ public:
 	UPROPERTY(EditAnyWhere, Category = "Item Settings")
 		bool isPoint = false;
 
+	UPROPERTY(EditAnywhere, Category = Niagara)
+		class UNiagaraSystem* NS_Ring;
+
 
 };
