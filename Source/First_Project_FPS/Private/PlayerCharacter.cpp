@@ -323,6 +323,7 @@ void APlayerCharacter::InputFire()
 
 				}
 				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemySimpleFactory"))) {
+					myGM->AddScore(1);
 					hitInfo.GetActor()->Destroy();
 				}
 				else if (hitInfo.GetActor()->GetName().Contains(TEXT("BP_EnemyCharacter"))) {

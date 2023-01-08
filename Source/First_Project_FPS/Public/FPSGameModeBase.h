@@ -32,6 +32,16 @@ public:
 	void ShowEnd();
 
 
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class AEnemyBoss> bossActor;
+
+
+	UPROPERTY(EditAnywhere)
+		int32 bossScore = 10;
+
+	UPROPERTY(EditAnywhere)
+		FVector startLocation = {0,200,400};
+
 
 protected:
 	virtual void BeginPlay() override;
@@ -49,6 +59,12 @@ private:
 
 
 	void PrintScore();
+
+	void SpawnBoss();
+
+	bool isSpawnBoss = false;
+
+
 
 
 };

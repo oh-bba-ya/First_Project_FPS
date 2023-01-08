@@ -7,13 +7,16 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerCharacter.h"
 #include "StartWidget.h"
+#include "EnemyBoss.h"
+#include "TimerManager.h"
 
 
 void AFPSGameModeBase::BeginPlay()
 {
-	//Super::BeginPlay();
+	Super::BeginPlay();
 
-	player = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	
+	
 
 	if (mainWidget != nullptr) {
 		// mainWidget 블루프린트 파일을 메모리에 로드한다.
@@ -39,6 +42,14 @@ void AFPSGameModeBase::AddScore(int32 point)
 {
 	// 매개변수 point를 통해 넘겨받은 점수를 현재 점수에 누적시킨다.
 	currentScore += point;
+	UE_LOG(LogTemp, Warning, TEXT("AddScore : %d"), currentScore);
+	if (currentScore > bossScore) {
+		if (!isSpawnBoss) {
+			isSpawnBoss = true;
+			FTimerHandle  spawnHandle;
+			GetWorld()->GetTimerManager().SetTimer(spawnHandle, this, &AFPSGameModeBase::SpawnBoss,4,false);
+		}
+	}
 
 	PrintScore();
 }
@@ -83,6 +94,14 @@ void AFPSGameModeBase::ShowEnd()
 		}
 
 	}
+
+}
+
+void AFPSGameModeBase::SpawnBoss()
+{
+
+
+	GetWorld()->SpawnActor<AEnemyBoss>(bossActor, startLocation, FRotator::ZeroRotator);
 
 }
 

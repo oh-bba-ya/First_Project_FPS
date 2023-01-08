@@ -137,6 +137,7 @@ void ABullet::OnBulletOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		enemyFactory->Destroy();
 
 		if (currentGameModeBase != nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("AddScore "));
 			currentGameModeBase->AddScore(1);
 		}
 	}
