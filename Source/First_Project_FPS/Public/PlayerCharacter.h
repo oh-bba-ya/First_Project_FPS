@@ -129,6 +129,8 @@ public:
 		class USoundBase* SB_Laser;
 
 
+	bool isAlive = true;
+
 
 private:
 	// 현재 체력

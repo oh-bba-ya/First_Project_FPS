@@ -69,7 +69,7 @@ private:
 
 	class AFPSGameModeBase* myGameMode;
 
-
+	class APlayerCharacter* playerActor;
 
 
 

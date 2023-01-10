@@ -40,6 +40,9 @@ void AEnemyBoss::BeginPlay()
 {
 	Super::BeginPlay();
 
+	playerActor = Cast<APlayerCharacter>(UGameplayStatics::GetActorOfClass(GetWorld(), APlayerCharacter::StaticClass()));
+
+
 	SetDirection();
 
 }
@@ -57,18 +60,28 @@ void AEnemyBoss::Tick(float DeltaTime)
 void AEnemyBoss::SetDirection()
 {
 
+	if (playerActor != nullptr ) {
+		playerPos = playerActor->GetActorLocation();
+
+		// 플레이어 액터의 위치 - 자신의 위치
+		direction = playerPos - GetActorLocation();
+
+		direction.Normalize();
+	}
+	/*
 	for (TActorIterator<APlayerCharacter> player(GetWorld()); player; ++player) {
 		if (player->GetName().Contains(TEXT("BP_PlayerCharacter"))) {
+			if (player->isAlive) {
+				playerPos = player->GetActorLocation();
 
-			playerPos = player->GetActorLocation();
+				// 플레이어 액터의 위치 - 자신의 위치
+				direction = playerPos - GetActorLocation();
 
-			// 플레이어 액터의 위치 - 자신의 위치
-			direction = playerPos - GetActorLocation();
-
-			direction.Normalize();
+				direction.Normalize();
+			}
 		}
 	}
-	
+	*/
 
 	
 }
