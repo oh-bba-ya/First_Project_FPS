@@ -28,8 +28,8 @@ AEnemyBoss::AEnemyBoss()
 	meshComp->SetupAttachment(boxComp);
 
 	// 2-2. 스태틱 메쉬 위치 조정
-	meshComp->SetRelativeLocation(FVector(0, 0, -50));
-
+	wingComp = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Wing Component"));
+	wingComp->SetupAttachment(meshComp);
 
 
 
@@ -54,6 +54,10 @@ void AEnemyBoss::Tick(float DeltaTime)
 
 
 	Move(DeltaTime);
+
+	FRotator rot = FRotator(15, 15, 0);
+
+	wingComp->AddRelativeRotation(rot);
 
 }
 

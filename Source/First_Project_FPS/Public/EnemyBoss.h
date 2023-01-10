@@ -30,6 +30,9 @@ public:
 		class UStaticMeshComponent* meshComp;
 
 	UPROPERTY(EditAnywhere, Category = "Boss Settings")
+		class UStaticMeshComponent* wingComp;
+
+	UPROPERTY(EditAnywhere, Category = "Boss Settings")
 		TSubclassOf<class AEnemySimple> enemyBullet;
 
 

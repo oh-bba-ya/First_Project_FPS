@@ -2,6 +2,10 @@
 
 
 #include "EnemyCharacter.h"
+#include "EnemySimple.h"
+#include "PlayerCharacter.h"
+#include "EngineUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
@@ -18,6 +22,19 @@ void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	AActor* characterActor = UGameplayStatics::GetActorOfClass(GetWorld(), APlayerCharacter::StaticClass());
+
+	if (characterActor != nullptr)
+	{
+		character = Cast<APlayerCharacter>(characterActor);
+
+		if (character != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("not null : character"))
+		}
+	}
+
+
 }
 
 // Called every frame

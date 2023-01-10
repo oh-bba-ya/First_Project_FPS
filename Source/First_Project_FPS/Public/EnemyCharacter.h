@@ -30,8 +30,23 @@ public:
 	UFUNCTION()
 		void EnemyHitEvent(int32 d = 1);
 
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class AEnemySimple> enemyFactory;
+
+	class APlayerCharacter* target;
+
+	UPROPERTY(EditAnywhere, Category = "Enemy Setting")
+		TSubclassOf<class APlayerCharacter> characterBP;
+
 private:
 	UPROPERTY(EditAnywhere, Category = "Enemy Settings")
 		int32 enemyHP = 5;
 
+	float curTime = 0;
+	float coolTime = 2.0f;
+
+	UPROPERTY(EditAnywhere, Category = "EnemySpawn Settings")
+		float setDistance;
+
+	class APlayerCharacter* character;
 };
